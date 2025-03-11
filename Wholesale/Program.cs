@@ -1,9 +1,9 @@
 global using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http.Features;          // Para configurar FormOptions
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using System.Text.Json.Serialization; 
+using System.Text.Json.Serialization;
 using Wholesale.Server.Data;
 using Wholesale.Models;
 using Wholesale.Server.Service;
@@ -15,37 +15,34 @@ namespace Wholesale.Server
     {
         public static void Main(string[] args)
         {
-
             var builder = WebApplication.CreateBuilder(args);
 
+            // 1) Configuración de EF Core
             builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer"));
             });
 
+            // 2) Configuración de CORS
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("Wholesale.Server", policy =>
                 {
                     policy.AllowAnyOrigin()
-                       .AllowAnyHeader()
-                       .AllowAnyMethod()
-                       .WithExposedHeaders("Authorization");
+                          .AllowAnyHeader()
+                          .AllowAnyMethod()
+                          .WithExposedHeaders("Authorization");
                 });
             });
 
-            builder.Services.AddHttpClient<SapService>()
-                .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
-                {
-                    ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true
-                });
-
-            builder.Services.AddHttpClient<SapService>(client =>
+            // 3) Configuración para subida de archivos grandes (opcional, si lo necesitas)
+            builder.Services.Configure<FormOptions>(options =>
             {
-                client.BaseAddress = new Uri("https://172.16.50.45:50000/b1s/v1/");
-                client.DefaultRequestHeaders.Add("Accept", "application/json");
+                // Límite de 100 MB, por ejemplo
+                options.MultipartBodyLengthLimit = 100_000_000;
             });
 
+            // 4) Configuración de autenticación JWT (si la usas)
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
@@ -63,6 +60,7 @@ namespace Wholesale.Server
 
             builder.Services.AddAuthorization();
 
+            // 5) Registrar tus repositorios
             #region Repositorios
 
             #region Servicios de usuario
@@ -83,22 +81,28 @@ namespace Wholesale.Server
 
             #endregion
 
-
+            // 6) Configuración de serialización
             builder.Services.AddControllers()
                 .AddJsonOptions(options =>
                 {
-                    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
-                    options.JsonSerializerOptions.MaxDepth = 64; // Opcional, si quieres más profundidad
+                    // Evitar problemas de referencias cíclicas
+                    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+                    // Aumentar la profundidad si fuera necesario
+                    options.JsonSerializerOptions.MaxDepth = 64;
                 });
 
+            // 7) Swagger (para documentar tu API)
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            // 8) Resto de servicios
             builder.Services.AddLocalization();
             builder.Services.AddControllersWithViews();
             builder.Services.AddRazorPages();
 
             var app = builder.Build();
 
+            // Swagger solo en Development (por ejemplo)
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
@@ -122,8 +126,7 @@ namespace Wholesale.Server
                 endpoints.MapRazorPages();
             });
 
-            app.MapControllers();
-
+            // Para debug de token
             app.Use(async (context, next) =>
             {
                 if (context.Request.Headers.ContainsKey("Authorization"))
@@ -139,7 +142,6 @@ namespace Wholesale.Server
             });
 
             app.Run();
-
         }
     }
 }

@@ -2,11 +2,9 @@
 using System.Net;
 using Wholesale.Models;
 using Wholesale.Server.Repository;
-using Microsoft.AspNetCore.Authorization;
 
 namespace Wholesale.Server.Controllers
 {
-    //[Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class VisitDetailController : ControllerBase
@@ -16,6 +14,19 @@ namespace Wholesale.Server.Controllers
         public VisitDetailController(IRepository<VisitDetail, int> repository)
         {
             _repository = repository;
+        }
+
+        public class VisitDetailUploadDto
+        {
+            public int VisitHeaderId { get; set; }
+            public int? SalespersonCode { get; set; }
+            public string? SalespersonName { get; set; }
+            public string? Address { get; set; }
+            public string? PhoneNumber { get; set; }
+            public string? TypeVisit { get; set; }
+            public string? Coordinates { get; set; }
+            public string? Comment { get; set; }
+            public IFormFile? File { get; set; }
         }
 
         [HttpGet]
@@ -51,10 +62,30 @@ namespace Wholesale.Server.Controllers
         }
 
         [HttpPost]
-        public ActionResult<VisitDetail> Post([FromBody] VisitDetail entity)
+        [Consumes("multipart/form-data")]
+        public async Task<ActionResult<VisitDetail>> Post([FromForm] VisitDetailUploadDto dto)
         {
             try
             {
+                var entity = new VisitDetail
+                {
+                    VisitHeaderId = dto.VisitHeaderId,
+                    SalespersonCode = dto.SalespersonCode,
+                    SalespersonName = dto.SalespersonName,
+                    Address = dto.Address,
+                    PhoneNumber = dto.PhoneNumber,
+                    TypeVisit = dto.TypeVisit,
+                    Coordinates = dto.Coordinates,
+                    Comment = dto.Comment
+                };
+
+                if (dto.File != null)
+                {
+                    using var ms = new MemoryStream();
+                    await dto.File.CopyToAsync(ms);
+                    entity.Photo = ms.ToArray();
+                }
+
                 entity = _repository.Add(entity);
                 return CreatedAtAction(nameof(Get), new { id = entity.VisitDetailId }, entity);
             }
@@ -65,7 +96,8 @@ namespace Wholesale.Server.Controllers
         }
 
         [HttpPut("{id}")]
-        public ActionResult<VisitDetail> Put(int id, [FromBody] VisitDetail entity)
+        [Consumes("multipart/form-data")]
+        public async Task<ActionResult<VisitDetail>> Put(int id, [FromForm] VisitDetailUploadDto dto)
         {
             try
             {
@@ -75,8 +107,25 @@ namespace Wholesale.Server.Controllers
                     return NotFound();
                 }
 
-                entity = _repository.Update(entity);
-                return Ok(entity);
+                // Actualiza las propiedades
+                existingEntity.VisitHeaderId = dto.VisitHeaderId;
+                existingEntity.SalespersonCode = dto.SalespersonCode;
+                existingEntity.SalespersonName = dto.SalespersonName;
+                existingEntity.Address = dto.Address;
+                existingEntity.PhoneNumber = dto.PhoneNumber;
+                existingEntity.TypeVisit = dto.TypeVisit;
+                existingEntity.Coordinates = dto.Coordinates;
+                existingEntity.Comment = dto.Comment;
+
+                if (dto.File != null)
+                {
+                    using var ms = new MemoryStream();
+                    await dto.File.CopyToAsync(ms);
+                    existingEntity.Photo = ms.ToArray();
+                }
+
+                var updatedEntity = _repository.Update(existingEntity);
+                return Ok(updatedEntity);
             }
             catch (Exception ex)
             {

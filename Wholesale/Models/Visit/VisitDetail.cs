@@ -1,6 +1,8 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
+
 
 namespace Wholesale.Models
 {
@@ -11,6 +13,7 @@ namespace Wholesale.Models
         [Required]
         [ForeignKey(nameof(VisitHeader))]
         public int VisitHeaderId { get; set; }
+        [JsonIgnore]
         public VisitHeader? VisitHeader { get; set; }
         [Required(ErrorMessage = "Se debe seleccionar un cliente")]
         public int? SalespersonCode { get; set; }
