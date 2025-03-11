@@ -17,6 +17,7 @@ namespace Wholesale.Models
         public string? SalespersonName { get; set; }
         public string? Address { get; set; }
         public string? PhoneNumber { get; set; }
+        public string? TypeVisit { get; set; }
         public byte[]? Photo { get; set; }
         public string? Coordinates { get; set; }
         public string? Comment { get; set; }

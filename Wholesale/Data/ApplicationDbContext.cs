@@ -19,6 +19,15 @@ namespace Wholesale.Server.Data
         public DbSet<VisitDetail> VisitDetails { get; set; }
         #endregion
 
+        #region Regions
+        public DbSet<RegionHeader> RegionHeaders { get; set; }
+        public DbSet<RegionDetail> RegionDetails { get; set; }
+        #endregion
+
+        #region VisitType
+        public DbSet<VisitType> VisitTypes { get; set; }
+        #endregion  
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -30,13 +39,27 @@ namespace Wholesale.Server.Data
                 .OwnsOne(p => p.RecordLog);
 
             builder.Entity<VisitDetail>()
+                .OwnsOne(p => p.RecordLog);            
+            
+            builder.Entity<RegionHeader>()
+                .OwnsOne(p => p.RecordLog);           
+            
+            builder.Entity<RegionDetail>()
+                .OwnsOne(p => p.RecordLog);
+                        
+            builder.Entity<VisitType>()
                 .OwnsOne(p => p.RecordLog);
 
-            // Opcional: asegurar el cascade delete
             builder.Entity<VisitDetail>()
                 .HasOne(d => d.VisitHeader)
                 .WithMany(h => h.Details)
                 .HasForeignKey(d => d.VisitHeaderId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<RegionHeader>()
+                .HasMany(r => r.Details)
+                .WithOne(rd => rd.RegionHeader)
+                .HasForeignKey(rd => rd.RegionId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

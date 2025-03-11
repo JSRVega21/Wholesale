@@ -10,7 +10,10 @@ namespace Wholesale.Models
         public int VisitHeaderId { get; set; }
         public DateTime? CheckInTime { get; set; }
         public DateTime? CheckOutTime { get; set; }
-        public int? TotalVisits { get; set; }
+        [Required(ErrorMessage = "Se debe seleccionar una ruta")]
+        public string? Region { get; set; }
+        public string? Routes { get; set; }
+        public float? TotalVisits { get; set; }
         public List<VisitDetail>? Details { get; set; }
         public RecordLog? RecordLog { get; set; } = new RecordLog();
     }

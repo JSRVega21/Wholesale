@@ -75,6 +75,12 @@ namespace Wholesale.Server
             builder.Services.AddScoped<IRepository<VisitDetail, int>, VisitDetailRepository>();
             #endregion
 
+            #region Servicios para los catalogos
+            builder.Services.AddScoped<IRepository<RegionHeader, int>, RegionHeaderRepository>();
+            builder.Services.AddScoped<IRepository<RegionDetail, int>, RegionDetailRepository>();
+            builder.Services.AddScoped<IRepository<VisitType, int>, VisitTypeRepository>();
+            #endregion
+
             #endregion
 
 
