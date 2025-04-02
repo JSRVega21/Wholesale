@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Wholesale.Server.Repository;
 namespace Wholesale.Server.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase

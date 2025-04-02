@@ -7,7 +7,7 @@ using Wholesale.Models;
 
 namespace Wholesale.Server.Repository
 {
-    public class VisitHeaderRepository : IRepository<VisitHeader, int>
+    public class VisitHeaderRepository : IVisitHeaderRepository<VisitHeader, int>
     {
         private readonly IDbContextFactory<ApplicationDbContext> _factory;
         public VisitHeaderRepository(IDbContextFactory<ApplicationDbContext> factory)
@@ -82,13 +82,19 @@ namespace Wholesale.Server.Repository
         public IList<VisitHeader> GetList()
         {
             var db = _factory.CreateDbContext();
-            return db.VisitHeaders.Include(v => v.Details).ToList();
+            return db.VisitHeaders
+                .Include(v => v.Details)
+                .OrderByDescending(v => v.VisitHeaderId)
+                .ToList();
         }
 
         public async Task<IList<VisitHeader>> GetListAsync()
         {
             var db = _factory.CreateDbContext();
-            return await db.VisitHeaders.Include(v => v.Details).ToListAsync();
+            return await db.VisitHeaders
+                .Include(v => v.Details)
+                .OrderByDescending(v => v.VisitHeaderId)
+                .ToListAsync();
         }
 
         public VisitHeader Update(VisitHeader entity)
@@ -113,5 +119,24 @@ namespace Wholesale.Server.Repository
         {
             return _factory.CreateDbContext();
         }
+
+        public IEnumerable<VisitHeader> GetBySalespersonOrPos(int? slpcode, int? codigopos)
+        {
+            using var db = _factory.CreateDbContext();
+            var query = db.VisitHeaders.Include(v => v.Details).AsQueryable();
+
+            if (slpcode.HasValue)
+            {
+                query = query.Where(v => v.Slpcode == slpcode.Value);
+            }
+
+            if (codigopos.HasValue)
+            {
+                query = query.Where(v => v.U_CodigoPOS == codigopos.Value);
+            }
+
+            return query.ToList();
+        }
+
     }
 }

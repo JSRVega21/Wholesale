@@ -16,7 +16,7 @@ namespace Wholesale.Models
         [JsonIgnore]
         public VisitHeader? VisitHeader { get; set; }
         [Required(ErrorMessage = "Se debe seleccionar un cliente")]
-        public int? SalespersonCode { get; set; }
+        public string? SalespersonCode { get; set; }
         public string? SalespersonName { get; set; }
         public string? Address { get; set; }
         public string? PhoneNumber { get; set; }

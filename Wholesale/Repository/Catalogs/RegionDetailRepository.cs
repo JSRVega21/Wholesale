@@ -83,13 +83,19 @@ namespace Wholesale.Server.Repository
         public IList<RegionDetail> GetList()
         {
             var db = _factory.CreateDbContext();
-            return db.RegionDetails.Include(d => d.RegionHeader).ToList();
+            return db.RegionDetails
+                .Include(d => d.RegionHeader)
+                .OrderBy(d => d.NameRoute)
+                .ToList();
         }
 
         public async Task<IList<RegionDetail>> GetListAsync()
         {
             var db = _factory.CreateDbContext();
-            return await db.RegionDetails.Include(d => d.RegionHeader).ToListAsync();
+            return await db.RegionDetails
+                .Include(d => d.RegionHeader)
+                .OrderBy(d => d.NameRoute)
+                .ToListAsync();
         }
 
         public RegionDetail Update(RegionDetail entity)

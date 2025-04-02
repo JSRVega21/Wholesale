@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using Wholesale.Models;
 using Wholesale.Server.Repository;
 
 namespace Wholesale.Server.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class VisitDetailController : ControllerBase
@@ -19,7 +21,7 @@ namespace Wholesale.Server.Controllers
         public class VisitDetailUploadDto
         {
             public int VisitHeaderId { get; set; }
-            public int? SalespersonCode { get; set; }
+            public string? SalespersonCode { get; set; }
             public string? SalespersonName { get; set; }
             public string? Address { get; set; }
             public string? PhoneNumber { get; set; }

@@ -3,17 +3,18 @@ using System.Net;
 using Wholesale.Models;
 using Wholesale.Server.Repository;
 using Microsoft.AspNetCore.Authorization;
+using Wholesale.server.Repository;
 
 namespace Wholesale.Server.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class VisitHeaderController : ControllerBase
     {
-        private readonly IRepository<VisitHeader, int> _repository;
+        private readonly IVisitHeaderRepository<VisitHeader, int> _repository;
 
-        public VisitHeaderController(IRepository<VisitHeader, int> repository)
+        public VisitHeaderController(IVisitHeaderRepository<VisitHeader, int> repository)
         {
             _repository = repository;
         }
@@ -111,5 +112,20 @@ namespace Wholesale.Server.Controllers
                 return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
             }
         }
+
+        [HttpGet("search")]
+        public ActionResult<IEnumerable<VisitHeader>> Search([FromQuery] int? slpcode, [FromQuery] int? codigopos)
+        {
+            try
+            {
+                var result = _repository.GetBySalespersonOrPos(slpcode, codigopos);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
     }
 }

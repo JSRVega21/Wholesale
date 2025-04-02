@@ -69,8 +69,10 @@ namespace Wholesale.Server
             #endregion
 
             #region Servicios de checklist de vendedores
-            builder.Services.AddScoped<IRepository<VisitHeader, int>, VisitHeaderRepository>();
+            builder.Services.AddScoped<IVisitHeaderRepository<VisitHeader, int>, VisitHeaderRepository>();
             builder.Services.AddScoped<IRepository<VisitDetail, int>, VisitDetailRepository>();
+            builder.Services.AddScoped<IVisitRepository, VisitRepository>();
+
             #endregion
 
             #region Servicios para los catalogos

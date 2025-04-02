@@ -83,14 +83,20 @@ namespace Wholesale.Server.Repository
         public IList<VisitDetail> GetList()
         {
             var db = _factory.CreateDbContext();
-            return db.VisitDetails.Include(d => d.VisitHeader).ToList();
+            return db.VisitDetails
+                     .Include(d => d.VisitHeader)
+                     .OrderByDescending(d => d.VisitDetailId)
+                     .ToList();
         }
-
         public async Task<IList<VisitDetail>> GetListAsync()
         {
             var db = _factory.CreateDbContext();
-            return await db.VisitDetails.Include(d => d.VisitHeader).ToListAsync();
+            return await db.VisitDetails
+                           .Include(d => d.VisitHeader)
+                           .OrderByDescending(d => d.VisitDetailId)
+                           .ToListAsync();
         }
+
 
         public VisitDetail Update(VisitDetail entity)
         {

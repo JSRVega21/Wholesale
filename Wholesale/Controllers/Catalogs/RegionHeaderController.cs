@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Wholesale.Server.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class RegionHeaderController : ControllerBase
