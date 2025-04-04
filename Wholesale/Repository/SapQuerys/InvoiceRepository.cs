@@ -27,6 +27,7 @@ namespace Wholesale.server.Repository
                     string query = @"
                     SELECT 
                       T1.""NumAtCard"",
+                      T1.""DocDate"",
                       T1.""U_FacSerie"",
                       T1.""CardName"",
                       T1.""U_FacNom"",
@@ -44,6 +45,7 @@ namespace Wholesale.server.Repository
                       ON T2.""ItemCode"" = T3.""ItemCode""
                     WHERE T1.""NumAtCard"" = ?
                     GROUP BY 
+                      T1.""DocDate"",
                       T1.""U_FacSerie"", 
                       T1.""CardName"", 
                       T1.""U_FacNom"", 
@@ -68,16 +70,17 @@ namespace Wholesale.server.Repository
                                 invoice = new InvoiceSapCLS
                                 {
                                     NumAtCard = reader.IsDBNull(0) ? null : reader.GetString(0),
-                                    U_FacSerie = reader.IsDBNull(1) ? null : reader.GetString(1),
-                                    CardName = reader.IsDBNull(2) ? null : reader.GetString(2),
-                                    U_FacNom = reader.IsDBNull(3) ? null : reader.GetString(3),
-                                    U_FacNit = reader.IsDBNull(4) ? null : reader.GetString(4),
-                                    U_Telefonos = reader.IsDBNull(5) ? null : reader.GetString(5),
-                                    Address2 = reader.IsDBNull(6) ? null : reader.GetString(6),
-                                    DocTotal = reader.IsDBNull(7) ? null : reader.GetDecimal(7),
-                                    TotalBodegaGrande = reader.IsDBNull(8) ? null : reader.GetDecimal(8),
-                                    TotalBodegaPequena = reader.IsDBNull(9) ? null : reader.GetDecimal(9),
-                                    TotalOtros = reader.IsDBNull(10) ? null : reader.GetDecimal(10)
+                                    DocDate = reader.IsDBNull(1) ? null : reader.GetString(1),
+                                    U_FacSerie = reader.IsDBNull(2) ? null : reader.GetString(2),
+                                    CardName = reader.IsDBNull(3) ? null : reader.GetString(3),
+                                    U_FacNom = reader.IsDBNull(4) ? null : reader.GetString(4),
+                                    U_FacNit = reader.IsDBNull(5) ? null : reader.GetString(5),
+                                    U_Telefonos = reader.IsDBNull(6) ? null : reader.GetString(6),
+                                    Address2 = reader.IsDBNull(7) ? null : reader.GetString(7),
+                                    DocTotal = reader.IsDBNull(8) ? null : reader.GetDecimal(8),
+                                    TotalBodegaGrande = reader.IsDBNull(9) ? null : reader.GetDecimal(9),
+                                    TotalBodegaPequena = reader.IsDBNull(10) ? null : reader.GetDecimal(10),
+                                    TotalOtros = reader.IsDBNull(11) ? null : reader.GetDecimal(11)
                                 };
                             }
                         }

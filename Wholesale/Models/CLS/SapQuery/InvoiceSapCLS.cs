@@ -14,6 +14,8 @@ namespace Wholesale.Models
     {
         [JsonPropertyName("Número de la Factura:")]
         public string? NumAtCard { get; set; }
+        [JsonPropertyName("Fecha de la Factura:")]
+        public string? DocDate { get; set; }
         [JsonPropertyName("Tienda:")]
         public string? U_FacSerie { get; set; }
         [JsonPropertyName("Nombre de cliente:")]
